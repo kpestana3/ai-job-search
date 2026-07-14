@@ -1,0 +1,102 @@
+#!/bin/sh
+# Blocks pushes to `origin` if any protected personal-data template file is
+# missing its expected placeholder marker in any commit being pushed. This
+# guards against a personal-data commit (real name/contact/experience/etc.)
+# ever reaching the public origin remote. The `private` remote is exempt --
+# it exists specifically to hold real personal data as a backup.
+#
+# Enable in a clone with: git config core.hooksPath .githooks
+#
+# Detection logic: for every commit newly introduced by this push, for
+# every protected path, read the file's exact content AT THAT COMMIT via
+# `git show <sha>:<path>` (never the working tree -- skip-worktree or an
+# uncommitted edit could make the working tree lie about what's actually
+# being pushed) and require the file's known-good placeholder marker to be
+# present. Absence of the marker means the file has been personalized and
+# the push is refused. This is a positive check (require the expected-good
+# marker) rather than a negative one (blocklist name/email/phone patterns),
+# because the shape of "real data" is open-ended and easy to miss a variant
+# of, whereas "does this still look like the clean template" is a single,
+# stable thing to verify per file.
+
+remote_name="$1"
+zero="0000000000000000000000000000000000000000"
+
+# Only guard pushes to origin.
+if [ "$remote_name" != "origin" ]; then
+  exit 0
+fi
+
+check_paths="CLAUDE.md
+.claude/skills/job-application-assistant/01-candidate-profile.md
+.claude/skills/job-application-assistant/02-behavioral-profile.md
+.claude/skills/job-application-assistant/04-job-evaluation.md
+.claude/skills/job-application-assistant/07-interview-prep.md
+cv/main_example.tex
+.claude/skills/job-scraper/search-queries.md"
+
+marker_for() {
+  case "$1" in
+    "CLAUDE.md") echo '[YOUR_NAME]' ;;
+    ".claude/skills/job-application-assistant/01-candidate-profile.md") echo '[YOUR_NAME]' ;;
+    ".claude/skills/job-application-assistant/02-behavioral-profile.md") echo '[YOUR_NAME]' ;;
+    ".claude/skills/job-application-assistant/04-job-evaluation.md") echo '[YOUR_PRIMARY_SKILLS]' ;;
+    ".claude/skills/job-application-assistant/07-interview-prep.md") echo '[PROJECT_NAME]' ;;
+    "cv/main_example.tex") echo '[YOUR_NAME]' ;;
+    ".claude/skills/job-scraper/search-queries.md") echo '[YOUR_JOB_BOARD]' ;;
+  esac
+}
+
+flag_file="$(git rev-parse --git-dir)/.pre-push-blocked-flag"
+rm -f "$flag_file"
+
+while read local_ref local_sha remote_ref remote_sha; do
+  # Deleting a remote ref -- nothing to inspect.
+  if [ "$local_sha" = "$zero" ]; then
+    continue
+  fi
+
+  if [ "$remote_sha" = "$zero" ]; then
+    # New ref on the remote: don't fall back to scanning this branch's
+    # entire history. Only check commits origin doesn't already have on
+    # some other remote-tracking branch -- otherwise pushing a new branch
+    # name that shares history with an already-published branch would
+    # re-flag old, already-public commits that predate this hook's marker
+    # convention (observed: search-queries.md before commit 7e8df35).
+    commits=$(git rev-list "$local_sha" --not --remotes="$remote_name" 2>/dev/null)
+  else
+    commits=$(git rev-list "$remote_sha..$local_sha" 2>/dev/null)
+  fi
+
+  for commit in $commits; do
+    echo "$check_paths" | while IFS= read -r path; do
+      [ -z "$path" ] && continue
+
+      # Skip if this file doesn't exist at this commit (predates its creation).
+      git cat-file -e "$commit:$path" 2>/dev/null || continue
+
+      marker=$(marker_for "$path")
+      content=$(git show "$commit:$path" 2>/dev/null)
+
+      if ! printf '%s' "$content" | grep -qF "$marker"; then
+        echo "" >&2
+        echo "BLOCKED: push to origin refused." >&2
+        echo "  Commit: $commit" >&2
+        echo "  File:   $path" >&2
+        echo "  Reason: missing expected placeholder '$marker' -- this file may contain real personal data." >&2
+        echo "1" > "$flag_file"
+      fi
+    done
+  done
+done
+
+if [ -f "$flag_file" ]; then
+  rm -f "$flag_file"
+  echo "" >&2
+  echo "One or more protected files appear to contain real (non-template) content in a commit being pushed to origin." >&2
+  echo "If this is a false positive, restore the placeholder marker, or update this hook's check_paths/marker_for()." >&2
+  echo "Do NOT bypass with --no-verify unless you have manually confirmed no personal data is present." >&2
+  exit 1
+fi
+
+exit 0

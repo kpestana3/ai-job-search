@@ -1,0 +1,265 @@
+%% Academic CV Template - [YOUR_NAME]
+%% Full, untrimmed academic CV: complete publication list, all conference
+%% presentations, teaching/mentoring experience, and grants. Unlike
+%% cv/main_example.tex (the 2-page industry resume), this document has NO
+%% page limit -- content is reordered/reweighted per posting to surface
+%% relevant keywords, but never cut for length.
+%%
+%% SETUP: Run /setup to populate this with your actual information.
+%%
+%% Standard section order (see 05-cv-templates.md "Academic CV Section Order"):
+%% Professional Statement, Research Skills, Work Experience,
+%% International Training, Awards and Funding, Teaching and Mentoring,
+%% Education, Publications and Posters, then Service and Leadership,
+%% Professional Memberships, Certifications, References.
+%%
+%% Every \section is preceded by \needspace{...} sized for the heading plus
+%% at least its first entry, so a heading can never be orphaned at the
+%% bottom of a page with its content pushed entirely to the next page.
+%%
+%% Compile with: lualatex academic_cv_template.tex
+%% (pdflatex often fails on modern MiKTeX with fontawesome5 font-expansion errors.)
+
+\documentclass[11pt,a4paper,sans]{moderncv}
+\moderncvstyle{banking}
+\moderncvcolor{blue}
+
+% Force both first and last name AND section headings to render in moderncv
+% blue (color1). Default banking on lualatex+MiKTeX leaves these black, which
+% looks inconsistent with the rest of the blue accent scheme.
+\renewcommand*{\firstnamestyle}[1]{{\fontsize{34}{36}\bfseries\upshape\color{color1}#1}}
+\renewcommand*{\lastnamestyle}[1]{{\fontsize{34}{36}\bfseries\upshape\color{color1}#1}}
+\renewcommand*{\sectionstyle}[1]{{\sectionfont\color{color1}#1}}
+
+\usepackage[utf8]{inputenc}
+\usepackage{hyperref}
+\usepackage{needspace}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,
+    urlcolor=blue,
+    pdftitle={[YOUR_NAME] - Academic CV},
+    pdfpagemode=FullScreen,
+}
+\usepackage[scale=0.80]{geometry}
+\usepackage{import}
+
+% personal data
+\name{[First]}{[Last]}
+\address{[Your Address, City, Country]}{}{}
+\phone[mobile]{[+XX XXXXXXXXXX]}
+\email{[your.email@example.com]}
+\extrainfo{\href{[https://linkedin.com/in/your-profile]}{LinkedIn}}
+
+\begin{document}
+
+\makecvtitle
+
+% ============================================================
+%     PROFESSIONAL STATEMENT
+% ============================================================
+% SETUP: When tailoring for a specific posting, insert the exact target job
+% title from the posting here (e.g. "pursuing a **Postdoctoral Research
+% Associate** position"), framed as the target role, not fabricated into
+% work history. See 05-cv-templates.md "Target Job Title in Statement".
+
+\vspace{6pt}
+\small{[Write a 3-5 line professional statement tailored to the specific research position. Focus on your research specialization, key methods, and the trajectory of your work. Example: "Research scientist with a Ph.D. in [field], specializing in [research area]. Combines [primary method/technique] with [secondary method/technique] to study [research question]. N years of [field-to-bench / international / interdisciplinary] research in collaboration with academic, government, and global research institutions."]}
+
+% ============================================================
+%     RESEARCH SKILLS
+% ============================================================
+
+\needspace{5\baselineskip}
+\section{Research Skills}
+\vspace{1pt}
+\begin{itemize}
+
+\item \textbf{[Skill Category 1]}: [Specific techniques, assays, or methods. Be concrete.]
+
+\item \textbf{[Skill Category 2]}: [Specific techniques, tools, or platforms.]
+
+\item \textbf{[Skill Category 3]}: [Analytical/computational skills, software, languages.]
+
+\item \textbf{[Skill Category 4]}: [Operational skills: SOP development, lab setup, collaboration, project coordination.]
+
+\item \textbf{[Skill Category 5]}: [Languages, certifications, or other relevant skills.]
+
+\end{itemize}
+
+% ============================================================
+%     WORK EXPERIENCE
+% ============================================================
+
+\needspace{9\baselineskip}
+\section{Work Experience}
+\vspace{3pt}
+\begin{itemize}
+
+\needspace{6\baselineskip}
+\item{\cventry{[YYYY--Present]}{[Job Title]}{[Institution]}{[City, Country]}{}{\vspace{1pt}
+Advisor: [Advisor Name]
+\begin{itemize}
+    \item [Achievement or responsibility 1 - be specific, use numbers where possible]
+    \item [Achievement or responsibility 2]
+    \item [Achievement or responsibility 3]
+\end{itemize}}}
+
+\vspace{3pt}
+
+\needspace{6\baselineskip}
+\item{\cventry{[YYYY--YYYY]}{[Job Title]}{[Institution]}{[City, Country]}{}{\vspace{1pt}
+Advisor: [Advisor Name]
+\begin{itemize}
+    \item [Achievement or responsibility 1]
+    \item [Achievement or responsibility 2]
+\end{itemize}}}
+
+\end{itemize}
+
+% ============================================================
+%     INTERNATIONAL TRAINING
+% ============================================================
+
+\needspace{6\baselineskip}
+\section{International Training}
+\vspace{1pt}
+\begin{itemize}
+\item{\textbf{[Training/Collaboration Name], [Institution]} ([Month Year]) -- [Brief description of the training, collaboration, or field experience.]}
+\end{itemize}
+
+% ============================================================
+%     AWARDS AND FUNDING
+% ============================================================
+
+\needspace{5\baselineskip}
+\section{Awards and Funding}
+\vspace{1pt}
+\begin{itemize}
+\item{\textbf{[Award/Grant Name]} ([Grant ID, if applicable]) -- [Brief description] ([YYYY--YYYY]).}
+\end{itemize}
+
+% ============================================================
+%     TEACHING AND MENTORING
+% ============================================================
+
+\needspace{7\baselineskip}
+\section{Teaching and Mentoring}
+\vspace{1pt}
+\textbf{Teaching Experience}
+\vspace{1pt}
+\begin{itemize}
+\item{\textbf{[Course Name]} ([Terms taught]) -- [Brief description of teaching responsibilities and outcomes.]}
+\end{itemize}
+
+\vspace{3pt}
+\needspace{4\baselineskip}
+\textbf{Mentoring Experience}
+\vspace{1pt}
+\begin{itemize}
+\item{\textbf{[Mentee Name]}, [Mentee Role/Program] ([YYYY--YYYY]) -- [What you mentored them in, and any notable outcome.]}
+\end{itemize}
+
+% ============================================================
+%     EDUCATION
+% ============================================================
+
+\needspace{6\baselineskip}
+\section{Education}
+\vspace{1pt}
+\begin{itemize}
+
+\needspace{4\baselineskip}
+\item{\cventry{[YYYY--YYYY]}{[Degree] in [Field]}{[Institution]}{[City, Country]}{}{\vspace{1pt}
+[Thesis/dissertation focus.] Advisor: [Advisor Name].
+}}
+
+\vspace{3pt}
+
+\needspace{4\baselineskip}
+\item{\cventry{[YYYY--YYYY]}{[Degree] in [Field]}{[Institution]}{[City, Country]}{}{}}
+
+\end{itemize}
+
+% ============================================================
+%     PUBLICATIONS AND POSTERS
+% ============================================================
+
+\needspace{6\baselineskip}
+\section{Publications and Posters}
+\vspace{1pt}
+\textbf{Publications}
+\vspace{1pt}
+\begin{itemize}
+\item [Author(s), in publication order] ([Year]). [Title]. \textit{[Journal]}. \href{[DOI_URL]}{DOI: [DOI]}
+\end{itemize}
+
+\vspace{3pt}
+\needspace{4\baselineskip}
+\textbf{Presentations (as presenter)}
+\vspace{1pt}
+\begin{itemize}
+\item [Author(s)]. [Title]. [Conference/Series]. [Presentation type] -- [City, State/Country] ([Year])
+\end{itemize}
+
+\vspace{3pt}
+\needspace{4\baselineskip}
+\textbf{Additional Posters (Co-Author)}
+
+\small{Co-authored but not personally presented by the candidate:}
+\begin{itemize}
+\item [Author(s)]. [Title]. [Conference/Series]. [Presentation type] (presented by [Presenter]) -- [City, State/Country] ([Year])
+\end{itemize}
+
+% ============================================================
+%     SERVICE AND LEADERSHIP
+% ============================================================
+
+\needspace{4\baselineskip}
+\section{Service and Leadership}
+\vspace{1pt}
+\begin{itemize}
+\item{\textbf{[Role], [Organization]}, [Institution] ([YYYY--YYYY]) -- [Brief description of responsibilities.]}
+\end{itemize}
+
+% ============================================================
+%     PROFESSIONAL MEMBERSHIPS
+% ============================================================
+
+\needspace{3\baselineskip}
+\section{Professional Memberships}
+\vspace{1pt}
+\begin{itemize}
+\item{[Organization Name], [Institution] ([YYYY--YYYY])}
+\end{itemize}
+
+% ============================================================
+%     CERTIFICATIONS
+% ============================================================
+
+\needspace{4\baselineskip}
+\section{Certifications}
+\vspace{1pt}
+\begin{itemize}
+\item{\textbf{[Certification Name]} -- [Brief description, dates, active/expired status.]}
+\end{itemize}
+
+% ============================================================
+%     REFERENCES
+% ============================================================
+% SETUP: Academic convention lists named references with contact info
+% directly (not "available upon request"). Only include references who have
+% explicitly confirmed. Tag each with what they can specifically speak to --
+% see 08-reference-sheet-templates.md for the tag taxonomy and per-posting
+% selection logic that narrows the full pool down for each application.
+
+\needspace{7\baselineskip}
+\section{References}
+\vspace{1pt}
+\begin{itemize}
+\item{\textbf{[Reference Name]}, [Title], [Institution] -- \href{mailto:[email]}{[email]}, [phone] ([What this reference can specifically speak to])}
+\item{\textbf{[Reference Name]}, [Title], [Institution] -- \href{mailto:[email]}{[email]}, [phone] ([What this reference can specifically speak to])}
+\end{itemize}
+
+\end{document}

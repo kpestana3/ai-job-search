@@ -35,6 +35,7 @@ When the user provides a job posting (URL or text), follow this workflow:
 - Follow the template structure in `06-cover-letter-templates.md`
 - Create `cover_letters/cover_<company>_<role>.tex`
 - Ensure the letter connects specific experience to the role requirements
+- Also generate a per-posting reference sheet (4-5 references selected by tag match, not the full pool) — follow `08-reference-sheet-templates.md`
 
 ### Step 4: Interview Preparation
 - Follow the framework in `07-interview-prep.md`
@@ -55,6 +56,7 @@ When the user provides a job posting (URL or text), follow this workflow:
 | `05-cv-templates.md` | LaTeX CV structure and tailoring rules |
 | `06-cover-letter-templates.md` | LaTeX cover letter structure and tailoring rules |
 | `07-interview-prep.md` | STAR examples, tough questions, roleplay guidelines |
+| `08-reference-sheet-templates.md` | Reference pool tag taxonomy, per-posting reference selection, LaTeX template |
 
 ---
 

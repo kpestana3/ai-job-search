@@ -1,0 +1,45 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Reference Sheet - [Company], [Role]
+%
+% Example reference sheet with placeholder content. This is the structural
+% reference for /apply (see 08-reference-sheet-templates.md). Lists only the
+% 4-5 references tag-matched to THIS posting's emphasized themes, pulled from
+% the full pool in 01-candidate-profile.md -- never the whole pool.
+% Compiles with xelatex (same as the cover letter; reuses cover.cls).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[]{cover}
+\usepackage{fancyhdr}
+
+\pagestyle{fancy}
+\fancyhf{}
+
+\rfoot{Page \thepage \hspace{0pt}}
+\thispagestyle{empty}
+\renewcommand{\headrulewidth}{0pt}
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     TITLE NAME
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\namesection{}{\Huge{[YOUR NAME]}}{  \href{mailto:your.email@example.com}{your.email@example.com} | [+XX XXXXXXXXXX] |  \urlstyle{same}\href{https://www.linkedin.com/in/yourprofile}{LinkedIn}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     REFERENCE SHEET CONTENT
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\currentdate{\today}
+\lettercontent{References -- [Role] at [Company]}
+
+{\raggedright\fontspec[Path = OpenFonts/fonts/raleway/, BoldFont = Raleway-Bold, ItalicFont = Raleway-Medium, ItalicFeatures = {FakeSlant=0.2}, BoldItalicFont = Raleway-Bold, BoldItalicFeatures = {FakeSlant=0.2}]{Raleway-Medium}\fontsize{11pt}{14pt}\selectfont
+\begin{itemize}
+    \item \textbf{[Name]}, [Title, Institution] -- \href{mailto:[email]}{[email]}, [phone] \\{}
+    [One line: what this reference can specifically speak to, drawn from their profile tag(s), framed toward this posting's emphasis]
+    \item \textbf{[Name]}, [Title, Institution] -- \href{mailto:[email]}{[email]}, [phone] \\{}
+    [One line, same pattern]
+    \item \textbf{[Name]}, [Title, Institution] -- \href{mailto:[email]}{[email]}, [phone] \\{}
+    [Third reference, only if a third tag-matched name is warranted -- 2 is enough when only 2 strong matches exist]
+\end{itemize}\par}
+
+\end{document}

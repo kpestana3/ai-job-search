@@ -16,8 +16,12 @@ Follow these steps **exactly in order**. Do not skip steps.
 
 - If `$ARGUMENTS` looks like a URL, use `WebFetch` to retrieve the job posting content.
 - If it is pasted text, use it directly.
-- Extract: **company name**, **role title**, **department** (if mentioned), **location**, and **language** of the posting (Danish or English).
+- Extract: **company name**, **role title**, **department** (if mentioned), **location**, **language** of the posting (Danish or English), and a **job ID** if the posting displays one (e.g., `R-01306979`, `req12345`, a numeric requisition ID).
 - Store these for use throughout the workflow.
+- **Classify the posting as academic or industry**, per the Document Type Decision table in `.claude/skills/job-application-assistant/05-cv-templates.md` (university/postdoc/PI-lab/grant-funded → academic; corporate/for-profit → industry; ambiguous → ask the user or default to both). Store this decision — it determines whether Step 2 drafts the academic CV, the industry resume, or both.
+- **Determine the application folder name:** `<Company>_<RoleSlugOrJobID>`, where `<Company>` is a short, human-readable company identifier (e.g. `Temple`, `Illumina`, `CHOP`) and `<RoleSlugOrJobID>` is the posting's job ID if it has one, otherwise a short PascalCase role slug (e.g. `BoniLab`, `ResearchScientist`). This name is used for both the output folder and every filename in it (see Step 2). If a folder with this name already exists from a prior run of `/apply` on the same posting, reuse it rather than creating a duplicate.
+- Create the folder: `applications/<Company>_<RoleSlugOrJobID>/`
+- Save the job posting text to `applications/<Company>_<RoleSlugOrJobID>/job_posting.md` (the raw text or fetched content from this step, verbatim).
 
 ---
 
@@ -58,34 +62,63 @@ Read only the reference files you do not yet have:
 - `.claude/skills/job-application-assistant/03-writing-style.md`
 - `.claude/skills/job-application-assistant/05-cv-templates.md`
 - `.claude/skills/job-application-assistant/06-cover-letter-templates.md`
+- `.claude/skills/job-application-assistant/08-reference-sheet-templates.md`
 
 Also read the most recent existing CV and cover letter files for concrete structural reference (one of each is enough):
-- Read any existing `cv/main_*.tex` file as a LaTeX template reference
-- Read any existing `cover_letters/cover_*.tex` or `cover_letters/Cover_*.tex` file as a template reference
+- Read any existing `applications/*/[YOUR_NAME]_CV_*.tex` file as a LaTeX template reference (industry resume) — fall back to `cv/main_example.tex` if this is the first application
+- If the posting was classified as academic (or both) in Step 0, also read any existing `applications/*/[YOUR_NAME]_AcademicCV_*.tex` file, or `cv/academic_cv_template.tex` if none exists yet, as the academic CV reference
+- Read any existing `applications/*/[YOUR_NAME]_CoverLetter_*.tex` file as a template reference — fall back to `cover_letters/cover_example.tex` if this is the first application
+- Read any existing `applications/*/[YOUR_NAME]_References_*.tex` file as a template reference — fall back to `cover_letters/reference_sheet_example.tex` if this is the first application
 
-### CV (`cv/main_<company>.tex`)
+**Output location:** every document for this application goes into the folder created in Step 0, `applications/<Company>_<RoleSlugOrJobID>/`, using the naming convention `[YOUR_NAME]_<DocType>_<Company>_<id or slug>.tex` (e.g. `[YOUR_NAME]_CV_Temple_R-01306979.tex`, or `[YOUR_NAME]_CV_Temple_BoniLab.tex` when there's no job ID). Never write per-application documents into the flat `cv/` or `cover_letters/` directories — those hold only the master reference templates (`main_example.tex`, `academic_cv_template.tex`, `cover_example.tex`) and the shared `cover.cls`/`OpenFonts/` resources.
+
+Draft the document(s) determined by Step 0's classification:
+
+### Industry resume (`applications/<Company>_<RoleSlugOrJobID>/[YOUR_NAME]_CV_<Company>_<id or slug>.tex`)
+Generate when the posting was classified industry (or both).
 - Always in **English**
 - Follow the moderncv/banking format from `05-cv-templates.md`
 - Tailor the profile statement and experience bullets to the specific role
 - Reframe skills and achievements to match job requirements
 - Keep to 2 pages
+- Apply the Scientific Notation rules in `05-cv-templates.md` (italicize genus/species, abbreviate after first mention, italicize gene names, roman-text protein names)
 
-### Cover Letter (`cover_letters/cover_<company>_<role>.tex`)
+### Academic CV (`applications/<Company>_<RoleSlugOrJobID>/[YOUR_NAME]_AcademicCV_<Company>_<id or slug>.tex`)
+Generate when the posting was classified academic (or both).
+- Base off `cv/academic_cv_template.tex` (or the most recent `applications/*/[YOUR_NAME]_AcademicCV_*.tex`, if more current)
+- Always in **English**
+- **Section order is fixed** — see `05-cv-templates.md`'s "Academic CV Section Order". Do not reorder sections per posting; reweight bullet emphasis within sections instead.
+- No page limit — do NOT cut Publications, Posters and Presentations, Teaching Experience, Mentoring Experience, or Awards and Funding for length
+- Apply the same Scientific Notation rules as the industry resume
+- See `05-cv-templates.md`'s "Document Type Decision" section for the full generation rules
+
+### Cover Letter (`applications/<Company>_<RoleSlugOrJobID>/[YOUR_NAME]_CoverLetter_<Company>_<id or slug>.tex`)
 - **Match the language of the job posting** (Danish posting -> Danish cover letter, English posting -> English cover letter)
 - Follow the structure from `06-cover-letter-templates.md`
-- Use the `cover.cls` template
+- Use the `cover.cls` template (lives in `cover_letters/` — see Step 5a for the compile pattern needed when compiling from the application folder)
 - Tailor the opening paragraph to the specific role and company
 - Address to a named person if available in the posting, otherwise "Dear Hiring Manager" (or equivalent in posting language)
 - Keep to approximately one page
 - Any mention of agentic coding or AI tooling must reference **Claude Code** by name
 
-Write both files to disk. Keep the exact text of both drafts in working memory — you will pass them inline to the reviewer in Step 3 and revise them in Step 4 without re-reading.
+### Reference Sheet (`applications/<Company>_<RoleSlugOrJobID>/[YOUR_NAME]_References_<Company>_<id or slug>.tex`)
+Generate for every application, regardless of academic/industry classification.
+- Follow the selection logic in `08-reference-sheet-templates.md`: reuse the required/preferred skills and priorities already extracted for Step 1's job-fit evaluation (do not re-scan the posting), map them to the fixed tag taxonomy in `01-candidate-profile.md`'s References section, and score each reference in the pool by tag overlap
+- Select the **4-5 highest-scoring references** (not a tight 2-3) — this is a deliberate breadth choice, not a scoring artifact: the candidate's primary research advisor is excluded from the pool for personal reasons (see memory), which a search committee would normally expect to see, so a broader list gives the reader more context to judge relevance themselves rather than a narrow list that makes the gap more conspicuous. Still never a zero-overlap reference just to hit 5, and never the same subset by default across applications.
+- If the posting explicitly specifies a different reference count (e.g. "provide two references"), flag the mismatch to the user rather than silently picking one side — a posting's explicit count and this rule's 4-5 target can conflict, and it's the user's call which one wins, not something to resolve automatically either way.
+- If the posting strongly emphasizes a theme no reference covers (check the two flagged gaps in `01-candidate-profile.md`: Leadership & Team/Program Management, Grant Writing & Funding), do not force a weak match — note the gap for the Step 6 report instead
+- Use `cover_letters/reference_sheet_example.tex` as the structural template; watch for the `\\{}` escape before description lines (see "Known pitfall" in `08-reference-sheet-templates.md`)
+- **If an academic CV was also drafted in this step**, its References section (per `05-cv-templates.md`'s Academic CV Section Order) uses this same selected subset, not the full pool from `cv/academic_cv_template.tex`
+
+Write all files to disk. Keep the exact text of all drafts in working memory — you will pass them inline to the reviewer in Step 3 and revise them in Step 4 without re-reading.
 
 ---
 
 ## Step 3: REVIEWER - Research & Critique
 
 Use the **Agent tool** to spawn a `general-purpose` reviewer agent. The reviewer gets a fresh context, so pass the drafts **inline in the prompt** below (do not make the reviewer Read them). Scope the reviewer's file reads to content-critique essentials only — the reviewer does not need the LaTeX template files (`05`, `06`) to critique content, since those govern structural/LaTeX concerns the drafter already applied.
+
+The reviewer critiques the **industry resume and cover letter** (the persuasive, company-targeted documents). If an academic CV was also drafted in Step 2, do not inline its full text — it's a comprehensive factual document, not a persuasion piece. Instead, apply the reviewer's "missed keywords/requirements" findings from Part B to the academic CV in Step 4 (reorder/reweight, don't rewrite).
 
 Replace `<COMPANY>`, `<ROLE>`, `<INSERT_JOB_POSTING_TEXT_HERE>`, `<INSERT_CV_DRAFT_HERE>`, and `<INSERT_COVER_LETTER_DRAFT_HERE>` with actual values before dispatching.
 
@@ -113,11 +146,11 @@ Do NOT read `05-cv-templates.md` or `06-cover-letter-templates.md` — those gov
 ### 3. Drafts to Review
 Both drafts are provided inline below. Do NOT use the Read tool on the draft files — use these exact texts.
 
-<CV_DRAFT file="cv/main_<COMPANY>.tex">
+<CV_DRAFT file="applications/<COMPANY>_<ROLE_SLUG_OR_ID>/[YOUR_NAME]_CV_<COMPANY>_<ID_OR_SLUG>.tex">
 <INSERT_CV_DRAFT_HERE>
 </CV_DRAFT>
 
-<COVER_LETTER_DRAFT file="cover_letters/cover_<COMPANY>_<ROLE>.tex">
+<COVER_LETTER_DRAFT file="applications/<COMPANY>_<ROLE_SLUG_OR_ID>/[YOUR_NAME]_CoverLetter_<COMPANY>_<ID_OR_SLUG>.tex">
 <INSERT_COVER_LETTER_DRAFT_HERE>
 </COVER_LETTER_DRAFT>
 
@@ -134,7 +167,7 @@ Return your feedback in **two parts**:
 A JSON array of concrete edits the drafter can apply directly without re-reading the files. Each edit is an object:
 ```json
 {
-  "file": "cv/main_<COMPANY>.tex" | "cover_letters/cover_<COMPANY>_<ROLE>.tex",
+  "file": "applications/<COMPANY>_<ROLE_SLUG_OR_ID>/[YOUR_NAME]_CV_<COMPANY>_<ID_OR_SLUG>.tex" | "applications/<COMPANY>_<ROLE_SLUG_OR_ID>/[YOUR_NAME]_CoverLetter_<COMPANY>_<ID_OR_SLUG>.tex",
   "old_string": "<exact text currently in the draft>",
   "new_string": "<replacement text>",
   "reason": "<one-line rationale: keyword match / company angle / reframing / style>"
@@ -170,8 +203,9 @@ Once the reviewer agent returns its feedback:
    - **Tone and style issues:** apply the writing-style-guide fixes (no em-dashes, no cliches, no apologetic hedging, consistent first-person active voice).
    Use Edit for targeted changes; only re-read a file if an edit fails because the surrounding text has shifted.
 3. Do NOT incorporate any suggestion that would fabricate skills or experience. If a posting requirement is a genuine gap, acknowledge it honestly and frame adjacent experience instead.
+4. **If an academic CV was drafted in Step 2**, apply the reviewer's "missed keywords/requirements" findings to it as section reordering and bullet-emphasis changes — never as content cuts, and never by fabricating anything not already in `01-candidate-profile.md`.
 
-After all edits are applied, the two files on disk are the final drafts.
+After all edits are applied, the files on disk are the final drafts.
 
 ---
 
@@ -181,30 +215,73 @@ After all edits are applied, the two files on disk are the final drafts.
 
 ### 5a. Compile
 
+All documents live in `applications/<Company>_<RoleSlugOrJobID>/`. CVs have no external file dependencies and compile cleanly from that folder directly:
+
 ```bash
-cd cv && lualatex -interaction=nonstopmode main_<company>.tex
-cd ../cover_letters && xelatex -interaction=nonstopmode cover_<company>_<role>.tex
+cd applications/<Company>_<RoleSlugOrJobID>
+lualatex -interaction=nonstopmode [YOUR_NAME]_CV_<Company>_<id or slug>.tex
 ```
 
-- CV uses **lualatex** — pdflatex fails on modern MiKTeX with fontawesome5 font-expansion errors. lualatex handles the same sources cleanly.
-- Cover letter uses **xelatex** — cover.cls requires fontspec.
+If an academic CV was drafted, compile it too:
 
-If either compile fails, fix the error and re-compile until clean.
+```bash
+lualatex -interaction=nonstopmode [YOUR_NAME]_AcademicCV_<Company>_<id or slug>.tex
+```
+
+The cover letter is different: `cover.cls` hardcodes `Path = OpenFonts/fonts/...` throughout (11+ places) as plain filesystem paths relative to the compiling process's **working directory** — not resolved via kpathsea/TEXINPUTS, and not relative to the `.tex` file's own location. So TEXINPUTS does not fix this (confirmed by testing: it lets XeLaTeX find `cover.cls` itself, but every font load inside the class still fails since `OpenFonts/` isn't a subdirectory of `applications/<folder>/`). Instead, keep `cover_letters/` as the **working directory** (so the class file's own relative paths resolve correctly, unchanged from the template) and use `-output-directory` to send the compiled PDF into the application folder. Do NOT modify the `\fontspec[Path = ...]` lines in the cover letter `.tex` file itself — they stay exactly as written in `06-cover-letter-templates.md`'s template.
+
+```bash
+cd cover_letters
+xelatex -interaction=nonstopmode -output-directory="$(pwd)/../applications/<Company>_<RoleSlugOrJobID>" "../applications/<Company>_<RoleSlugOrJobID>/[YOUR_NAME]_CoverLetter_<Company>_<id or slug>.tex"
+```
+
+(PowerShell equivalent — use an absolute path for `-output-directory`, a bare relative `../applications/...` value was observed to fail to resolve:
+```powershell
+cd cover_letters
+$outDir = (Resolve-Path "..\applications\<Company>_<RoleSlugOrJobID>").Path
+& xelatex -interaction=nonstopmode "-output-directory=$outDir" "../applications/<Company>_<RoleSlugOrJobID>/[YOUR_NAME]_CoverLetter_<Company>_<id or slug>.tex"
+```)
+
+The reference sheet also uses `cover.cls`, so it needs the identical `cover_letters/`-as-working-directory pattern:
+
+```bash
+cd cover_letters
+xelatex -interaction=nonstopmode -output-directory="$(pwd)/../applications/<Company>_<RoleSlugOrJobID>" "../applications/<Company>_<RoleSlugOrJobID>/[YOUR_NAME]_References_<Company>_<id or slug>.tex"
+```
+
+This leaves `.aux`/`.log`/`.pdf` in the application folder alongside the `.tex`, and `cover_letters/` untouched except as a read-only resource directory.
+
+- CV uses **lualatex** — pdflatex fails on modern MiKTeX with fontawesome5 font-expansion errors. lualatex handles the same sources cleanly.
+- Cover letter and reference sheet use **xelatex** — cover.cls requires fontspec.
+
+If any compile fails, fix the error and re-compile until clean.
 
 ### 5b. Inspect layout
 
-Read both PDFs via the Read tool and verify:
+Read all generated PDFs via the Read tool and verify:
 
-**CV (`cv/main_<company>.pdf`):**
+**Industry resume (`[YOUR_NAME]_CV_<Company>_<id or slug>.pdf`):**
 - [ ] Exactly 2 pages (not 1, not 3)
 - [ ] No orphaned `\cventry` titles — a job/education title line must never sit alone at the bottom of page 1 with its bullets on page 2. This is the most common failure.
 - [ ] Section headings are not isolated at the top of page 2 with only 1-2 lines below
 - [ ] No awkward whitespace gaps
 
-**Cover letter (`cover_letters/cover_<company>_<role>.pdf`):**
+**Academic CV (`[YOUR_NAME]_AcademicCV_<Company>_<id or slug>.pdf`), if generated:**
+- [ ] No fixed page count to check — length is expected to vary (typically 3-5 pages)
+- [ ] No orphaned `\cventry` titles or section headings isolated at the bottom of a page (same failure mode as the resume, same `\needspace{5\baselineskip}` fix)
+- [ ] Section order matches the fixed standard order in `05-cv-templates.md` (not reordered per posting)
+- [ ] Publications and Posters, Teaching and Mentoring, and Awards and Funding are all present in full — confirm nothing was cut for length
+
+**Cover letter (`[YOUR_NAME]_CoverLetter_<Company>_<id or slug>.pdf`):**
 - [ ] Exactly 1 page
 - [ ] Signature block visible, not cut off or pushed to a second page
 - [ ] Bullet list font matches surrounding body text (both should be Raleway-Medium)
+
+**Reference sheet (`[YOUR_NAME]_References_<Company>_<id or slug>.pdf`):**
+- [ ] Exactly 1 page (if 4-5 entries don't fit on 1 page, trim to the strongest-scoring subset that does — never shrink font/margins to force a fit)
+- [ ] 4-5 references listed (fewer only if the pool genuinely lacks that many relevant matches), none from the "Pending" list in memory
+- [ ] Each entry's description line is tailored to this posting's emphasis, not copy-pasted verbatim from the pool in `01-candidate-profile.md`
+- [ ] If an academic CV was also generated, its References section lists the same subset
 
 ### 5c. Iterate until clean
 
@@ -220,14 +297,14 @@ Do not proceed to Step 6 until both PDFs pass inspection.
 
 ### 5d. ATS & keyword verification (CV)
 
-An ATS parser reads the PDF's embedded **text layer**, not the rendered page — a CV that passed visual inspection can still extract as garbage (icon glyphs where the contact details should be, scrambled reading order in multi-column layouts). This step verifies what a parser actually sees. It applies to the **CV only**; cover letters rarely go through keyword screening.
+An ATS parser reads the PDF's embedded **text layer**, not the rendered page — a CV that passed visual inspection can still extract as garbage (icon glyphs where the contact details should be, scrambled reading order in multi-column layouts). This step verifies what a parser actually sees. It applies to the **industry resume only** (`[YOUR_NAME]_CV_<Company>_<id or slug>.tex`); cover letters rarely go through keyword screening, and academic hiring committees read the CV directly rather than screening it through an ATS, so the academic CV does not need this check.
 
 **Availability check:** run `pdftotext -v`. `pdftotext` (poppler) is an optional dependency, not part of TeX distributions. If it is missing, print a one-line warning that the mechanical parse check is skipped, do the keyword-coverage check (item 3 below) against your visual Read of the PDF instead, and note the degraded mode in the Step 6 report. Same graceful-skip pattern as the salary lookup.
 
 **1. Extract the text layer:**
 
 ```bash
-cd cv && pdftotext -layout main_<company>.pdf main_<company>.txt
+cd applications/<Company>_<RoleSlugOrJobID> && pdftotext -layout [YOUR_NAME]_CV_<Company>_<id or slug>.pdf [YOUR_NAME]_CV_<Company>_<id or slug>.txt
 ```
 
 Read the `.txt` file.
@@ -274,12 +351,18 @@ Summarize 3-5 key decisions made to tailor the application:
 - What the reviewer suggested that was most impactful
 - Any gaps that were acknowledged or reframed
 
-### Files Created
-List the files written:
-- `cv/main_<company>.tex`
-- `cover_letters/cover_<company>_<role>.tex`
+### Reference Selection
+Report which 4-5 references were selected and why (which posting themes matched which tags). If a posting emphasized a theme no reference covers well (see `01-candidate-profile.md`'s flagged gaps), state that plainly rather than burying it — this is the one place in the workflow where a real coverage gap should be surfaced to the user, not smoothed over.
 
-Tell the user: "Both files are ready for your review. Open them to check the final output before compiling."
+### Files Created
+List the files written, all under `applications/<Company>_<RoleSlugOrJobID>/`:
+- `job_posting.md` (saved copy of the posting text, from Step 0)
+- `[YOUR_NAME]_CV_<Company>_<id or slug>.tex` + `.pdf` (if industry resume was generated)
+- `[YOUR_NAME]_AcademicCV_<Company>_<id or slug>.tex` + `.pdf` (if academic CV was generated)
+- `[YOUR_NAME]_CoverLetter_<Company>_<id or slug>.tex` + `.pdf`
+- `[YOUR_NAME]_References_<Company>_<id or slug>.tex` + `.pdf`
+
+Tell the user: "All files for this application are in `applications/<Company>_<RoleSlugOrJobID>/`. Open them to check the final output before submitting."
 
 ### Next Steps
 - **Submitted?** `/outcome <company>` logs it in the tracker and starts the per-application record that `/setup` later uses to calibrate the fit framework.

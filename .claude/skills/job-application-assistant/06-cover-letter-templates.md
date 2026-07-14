@@ -4,23 +4,50 @@
 
 Cover letters use a custom LaTeX document class (`cover.cls`) with Lato/Raleway fonts.
 
-**Output file:** `cover_letters/cover_<company>_<role>.tex`
+**Output file:** `applications/<Company>_<RoleSlug or JobID>/[YOUR_NAME]_CoverLetter_<Company>_<id or slug>.tex` (see `.claude/commands/apply.md` for the folder/naming convention)
 **Compile with:** XeLaTeX (cover.cls requires fontspec)
-**Font directory:** `cover_letters/OpenFonts/fonts/`
+**Font directory:** `cover_letters/OpenFonts/fonts/` (shared resource — see the compile command below for how the per-application file, two directories away, still finds it)
 
 ### Compile command
 
+Cover letters now live in `applications/<Company>_<RoleSlugOrJobID>/`, not next to `cover.cls`. `cover.cls` hardcodes `Path = OpenFonts/fonts/...` throughout as plain filesystem paths relative to the compiling process's **working directory** (not resolved via kpathsea/TEXINPUTS, and not relative to the `.tex` file's own location — confirmed by testing). So the fix is to keep `cover_letters/` as the working directory and redirect output with `-output-directory`, rather than pointing TEXINPUTS at the class file:
+
 ```bash
-cd cover_letters && xelatex -interaction=nonstopmode cover_<company>_<role>.tex
+cd cover_letters
+xelatex -interaction=nonstopmode -output-directory="$(pwd)/../applications/<Company>_<RoleSlugOrJobID>" "../applications/<Company>_<RoleSlugOrJobID>/[YOUR_NAME]_CoverLetter_<Company>_<id or slug>.tex"
 ```
 
-Expected output: `Output written on cover_<company>_<role>.pdf (1 page, ...)`. Any page count other than 1 is a failure that must be fixed before presenting to the user.
+(PowerShell — use an absolute path for `-output-directory`; a bare relative `../applications/...` value was observed to fail to resolve:
+```powershell
+cd cover_letters
+$outDir = (Resolve-Path "..\applications\<Company>_<RoleSlugOrJobID>").Path
+& xelatex -interaction=nonstopmode "-output-directory=$outDir" "../applications/<Company>_<RoleSlugOrJobID>/[YOUR_NAME]_CoverLetter_<Company>_<id or slug>.tex"
+```)
+
+Expected output: `Output written on ...[YOUR_NAME]_CoverLetter_<Company>_<id or slug>.pdf (1 page)`. Any page count other than 1 is a failure that must be fixed before presenting to the user.
+
+**Do not modify the `\fontspec[Path = ...]` lines** in the cover letter `.tex` file (including the bullet-list font block below) — they stay exactly as written in this template. The working-directory trick above is what makes the unmodified relative paths resolve correctly.
+
+**Raleway has no italic font file, and bold/italic must be declared explicitly, not just requested with `FakeSlant`.** The bundled `OpenFonts/fonts/raleway/` directory only ships upright weights (Bold, ExtraBold, ExtraLight, Heavy, Light, Medium, Regular, SemiBold, Thin); there is no `Raleway-Italic`. A bare `\fontspec[Path=...]{Raleway-Medium}` declares only the upright shape — `\textit{}` and `\textbf{}` then have no shape to switch to and silently render as plain upright Medium (confirmed via `LaTeX Font Warning: Font shape .../m/it undefined` / `.../b/n undefined` in the compile log). Adding a top-level `FakeSlant` key alone does **not** fix this — `FakeSlant` only synthesizes a slant for a shape that's explicitly declared via `ItalicFont=`/`ItalicFeatures=`; it does nothing on its own. A first fix attempt that added only bare `FakeSlant=0.2` was confirmed (via the `LaTeX Font Warning` in the compile log) to still produce no visible slant.
+
+The correct, complete font declaration — real bold from the bundled `Raleway-Bold.otf`, synthetic italic (and bold-italic) via `FakeSlant` since no true italic file exists:
+```latex
+\fontspec[
+  Path = OpenFonts/fonts/raleway/,
+  BoldFont = Raleway-Bold,
+  ItalicFont = Raleway-Medium,
+  ItalicFeatures = {FakeSlant=0.2},
+  BoldItalicFont = Raleway-Bold,
+  BoldItalicFeatures = {FakeSlant=0.2}
+]{Raleway-Medium}
+```
+`\lettercontent{}` in `cover.cls` already carries this full declaration. Any inline `\fontspec[Path = OpenFonts/fonts/raleway/]{Raleway-Medium}` block outside `\lettercontent{}` (i.e. the bullet-list font wrapper below, where `\textbf{}` labels and `\textit{}` species names both appear) must carry the same full set of keys, or bold/italic inside bullets will silently fail to render.
 
 ## Compile-and-Inspect Loop (MANDATORY)
 
 After writing the cover letter and before presenting to the user, always compile and visually inspect the PDF. Iterate until the layout is clean:
 
-1. Run `xelatex -interaction=nonstopmode cover_<company>_<role>.tex`
+1. Run the compile command from the "Compile command" section above (working directory `cover_letters/`, output redirected via `-output-directory`)
 2. Confirm page count is exactly 1 and compile succeeded
 3. Read the PDF via the Read tool and visually check: signature fits at the bottom, no text cut off, bullet font matches body
 
@@ -40,7 +67,7 @@ The `\lettercontent{}` macro appends `\\` to its argument. This breaks when the 
 ```latex
 \lettercontent{Here is how my experience maps:}
 
-{\raggedright\fontspec[Path = OpenFonts/fonts/raleway/]{Raleway-Medium}\fontsize{11pt}{13pt}\selectfont
+{\raggedright\fontspec[Path = OpenFonts/fonts/raleway/, BoldFont = Raleway-Bold, ItalicFont = Raleway-Medium, ItalicFeatures = {FakeSlant=0.2}, BoldItalicFont = Raleway-Bold, BoldItalicFeatures = {FakeSlant=0.2}]{Raleway-Medium}\fontsize{11pt}{13pt}\selectfont
 \begin{itemize}
     \item ...
 \end{itemize}\par}
@@ -49,7 +76,7 @@ The `\lettercontent{}` macro appends `\\` to its argument. This breaks when the 
 \lettercontent{[next paragraph]}
 ```
 
-The font wrapper is mandatory — if you just move `\begin{itemize}` outside `\lettercontent{}` without the `\fontspec` block, bullets render in the default body font (Lato) and visually mismatch the rest of the letter.
+The font wrapper is mandatory — if you just move `\begin{itemize}` outside `\lettercontent{}` without the `\fontspec` block, bullets render in the default body font (Lato) and visually mismatch the rest of the letter. Leave the `Path` exactly as `OpenFonts/fonts/raleway/` even though the file lives in `applications/<Company>_<RoleSlugOrJobID>/` — see "Compile command" above for why (compile with `cover_letters/` as the working directory, not the file's own location).
 
 ## Document Structure
 
@@ -125,6 +152,9 @@ The font wrapper is mandatory — if you just move `\begin{itemize}` outside `\l
 - If you know the team: "Dear [Company] hiring team,"
 - Generic: "Dear [Company]," (avoid "To whom it may concern")
 
+### Target Job Title (standing rule, ATS)
+The opening paragraph must state the **exact job title as written in the posting**, pulled verbatim from the posting text captured in `/apply` Step 0 (e.g. "I am writing to apply for the **Postdoctoral Research Associate** position..."). This is an ATS keyword-matching requirement — title matching is often literal, and cover letters that paraphrase the role ("this research position," "the opening on your team") instead of naming it exactly score worse. Frame it as the role being applied for, never as though the title is already held. This applies automatically on every `/apply` run.
+
 ### Length - Hard 1-Page Limit
 - Target: 1 page including signature block
 - Maximum: **never exceed 1 page**
@@ -145,6 +175,13 @@ The font wrapper is mandatory — if you just move `\begin{itemize}` outside `\l
 ### LaTeX Special Characters
 - Underscore: `\_`
 - Ampersand: `\&`
+
+### Scientific Notation (Life Sciences / Biomedical Roles)
+Apply automatically whenever the cover letter references organisms or genes:
+- **Genus/species:** italicize with `\textit{}`, e.g. `\textit{Plasmodium vivax}`.
+- **Abbreviation after first mention:** the first full mention in the document is spelled out in full; every subsequent mention abbreviates the genus to its initial and keeps italicizing, e.g. `\textit{Plasmodium vivax}` -> `\textit{P. vivax}`. Track this per document (a genus mentioned in the CV and again in the cover letter is a fresh "first mention" in each file).
+- **Gene names:** italicize, e.g. `\textit{DBP1}`, `\textit{EBP/DBP2}`.
+- **Protein names:** do NOT italicize — standard convention distinguishes the italic gene from the roman-text protein it encodes.
 
 ### Non-English Cover Letters
 - Same template structure, just write content in the posting's language
