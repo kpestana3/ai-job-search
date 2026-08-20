@@ -220,7 +220,7 @@ Documents cover skills, experience, education, references, and behavioral signal
 - Deal-breakers and must-haves
 - Salary expectations / baseline (optional)
 - Commute or location constraints (if not visible from CV)
-- Job search configuration (use the questions from Path C Section 9 below)
+- Job search configuration (use the questions from Path C Section 9 below, including Target Company Discovery if the user doesn't already have a list)
 
 Then proceed to Step 3 to populate the non-skill files (`CLAUDE.md`, `cv/main_example.tex`, `.claude/skills/job-scraper/search-queries.md`). Step 3 will detect that the seven skill files are already populated and skip those substeps.
 
@@ -233,7 +233,7 @@ If the user provides a single CV/resume:
 1. Read the document thoroughly.
 2. Extract all structured information: name, contact, education, experience, skills, publications, awards.
 3. Present a summary of what was extracted.
-4. Ask follow-up questions for gaps (behavioral profile, career goals, deal-breakers, salary expectations, references).
+4. Ask follow-up questions for gaps (behavioral profile, career goals, deal-breakers, salary expectations, references, target companies - run Target Company Discovery, defined under Path C Section 9, if the user doesn't already have a list).
 5. Proceed to Step 3 (file generation).
 
 ---
@@ -311,7 +311,7 @@ This section generates the search queries that power `/scrape`. Use the informat
 Ask about:
 - **Role titles to search for:** "What job titles should I search for? For example: Data Scientist, ML Engineer, Geophysicist." Collect 3-8 specific titles.
 - **Key skills as search terms:** "Which of your skills are most likely to appear in job postings?" Pick 3-5 that are distinctive and searchable.
-- **Target companies (optional):** "Are there specific companies you'd like to monitor for openings?"
+- **Target companies (optional):** "Are there specific companies you'd like to monitor for openings?" If the user doesn't have a ready list, run **Target Company Discovery** (below) instead of leaving this blank.
 - **Geographic scope:** "Which cities or regions should I search in? How far are you willing to commute?" Use this to define the location filter tiers (ideal, acceptable, borderline, too far).
 - **Job portals:** "The framework includes tools for Danish job portals (Jobindex, Jobbank, Jobdanmark, Jobnet). Are these the right ones for you, or do you use other sites?" Note: if the user is outside Denmark, acknowledge that the built-in CLI tools are Denmark-specific and suggest they can add their own portal integrations or rely on LinkedIn/Google site-searches.
 
@@ -321,6 +321,16 @@ Ask about:
 - If they have project management experience alongside technical skills: "Would you also want to search for 'Technical Project Manager' or 'Team Lead' roles?"
 
 This proactive suggestion step helps users discover career paths they might not have considered.
+
+### Target Company Discovery (Best Practice)
+
+Applies whenever target companies aren't already known: Path C's Section 9 above, Path B's follow-up questions, and Path A's Step A7 gap-filling. Runs once target roles/industries/skills are known (from whichever path collected them).
+
+1. Propose a candidate list of roughly 10-15 companies matching the user's domain, skills, and stated career goals, using general knowledge of the sector. Group them loosely if the domain naturally splits (e.g. "core industry," "adjacent/platform companies," "government or nonprofit implementers") rather than presenting a flat undifferentiated list.
+2. Cross-check the proposed list against the `workday-search` registry: `bun run .agents/skills/workday-search/cli/src/cli.ts companies --format table`. Flag which proposed companies already have working CLI coverage there.
+3. For proposed companies not in that registry, don't treat it as a gap that blocks anything - the Google `site:` search fallback (Priority 5 in `search-queries.md`) already covers any company. Mention that Workday CLI coverage can optionally be added later via `workday-search/SKILL.md`'s "Adding a company" steps, if the user specifically wants faster/more-structured search results for one of them.
+4. Present the list back to the user to confirm, edit, or extend - never write it into `CLAUDE.md` or `search-queries.md` without that confirmation step, same as any other `/setup`-collected data.
+5. Once confirmed, feed the list into `CLAUDE.md`'s Target Sectors section and `search-queries.md`'s Priority 5 (Target Company Career Pages) section, per Step 3 below.
 
 ---
 
