@@ -35,6 +35,7 @@ check_paths="CLAUDE.md
 cv/main_example.tex
 cv/academic_cv_template.tex
 tools/build_dashboard.py
+.claude/commands/connect.md
 .claude/skills/job-scraper/search-queries.md"
 
 marker_for() {
@@ -47,6 +48,7 @@ marker_for() {
     "cv/main_example.tex") echo '[YOUR_NAME]' ;;
     "cv/academic_cv_template.tex") echo '[YOUR_NAME]' ;;
     "tools/build_dashboard.py") echo '_owner_name()' ;;
+    ".claude/commands/connect.md") echo '[YOUR_DEGREE/BACKGROUND]' ;;
     ".claude/skills/job-scraper/search-queries.md") echo '[YOUR_JOB_BOARD]' ;;
   esac
 }
