@@ -1,0 +1,265 @@
+%% ATS Resume Template ("ats-resume")
+%% Dense, single-column, plain-LaTeX resume (no moderncv). Modeled on a
+%% reference resume that packs far more content per page than moderncv's
+%% banking style by eliminating its hint-column date layout and generous
+%% inter-entry spacing: entry title + right-aligned date share one line,
+%% organization/location sit in italics on the next line, and section
+%% headings are a bold caps label immediately followed by a full-width rule.
+%%
+%% Compile with: lualatex (fontawesome5 icons render cleanly under lualatex;
+%% pdflatex frequently fails on modern MiKTeX with font-expansion errors on
+%% the same package).
+%%
+%% Page limit: 1 page (industry resume standard for this framework -- see
+%% 05-cv-templates.md "Page Budget - Hard 1-Page Limit"). Every \resumeentry
+%% is preceded by \needspace{...} sized for the entry heading plus its first
+%% bullet, so an entry can never be orphaned at the bottom of a page with
+%% its bullets pushed to the next page.
+
+\documentclass[10pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{fontawesome5}
+\usepackage{xcolor}
+% top=0in: kept at 0in even though the bar no longer consumes normal text
+% flow (see eso-pic below) -- content still needs to start flush with no
+% residual margin, since the manual \vspace after the bar (in the TOP ACCENT
+% BAR CLEARANCE block) is what now creates the visual gap before the name.
+\usepackage[left=0.65in,right=0.65in,top=0in,bottom=0.5in]{geometry}
+% eso-pic draws the accent bar as a page-background layer, independent of
+% geometry's margins -- needed so the bar can bleed all the way to the
+% physical left/right page edges (2026-08-03, per user feedback that the
+% bar needs to "continue on the side" -- the prior \makebox[\linewidth]
+% version was capped at the text width, i.e. inside the left/right margins).
+\usepackage{eso-pic}
+\usepackage{enumitem}
+\usepackage{etoolbox}
+\usepackage{needspace}
+\usepackage{hyperref}
+
+% Accent color applied to name, section headings, and section rules only --
+% everything else (contact line, body text, entry titles) stays black for
+% ATS-safety and print legibility.
+\definecolor{cvblue}{HTML}{1F4E79}
+
+% Top accent bar, full page-width bleed (edge to edge, not capped at the
+% text margins). \AtPageUpperLeft places content with its reference point at
+% the page's physical top-left corner; \rule's optional negative lift
+% (-5pt) then lowers the bar by its own height so it hangs visibly *below*
+% that corner instead of extending upward off the physical page (a rule's
+% height normally extends upward from its reference point, which would put
+% an unlowered bar entirely off-canvas here). 5pt thick (up from the
+% text-width version's 3pt) per user request for a "slightly wider" bar.
+\AddToShipoutPictureBG{%
+  \AtPageUpperLeft{{\color{cvblue}\rule[-5pt]{\paperwidth}{5pt}}}%
+}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=cvblue,
+    urlcolor=cvblue,
+    pdftitle={[YOUR NAME] - Resume},
+    pdfpagemode=FullScreen,
+}
+
+\pagestyle{empty}
+% \raggedbottom (not \flushbottom, the LaTeX default) so the page ends with
+% real, unstretched whitespace instead of LaTeX inflating small interline
+% gaps to fill the page -- this matters if you ever use \enlargethispage.
+\raggedbottom
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+% \topskip (default 10pt) reserves space above the first box/line on every
+% page independent of geometry's top margin -- even at top=0in, LaTeX still
+% left a ~7pt gap (10pt topskip minus the accent bar's 3pt height) above the
+% bar. Set to 0pt so the bar is truly flush with the page edge (2026-08-03).
+\setlength{\topskip}{0pt}
+
+% Tight, uniform list spacing -- no \vspace between \item entries anywhere
+% in this document (see 05-cv-templates.md "Spacing inside itemize lists").
+% topsep MUST stay 0pt: even 1pt here silently adds space before the first
+% bullet of every single entry, which reads as "extra space after the
+% org/location line" without ever looking like a spacing bug in the source.
+% label=\textendash (not enumitem's default round bullet dot): the default
+% bullet glyph has no working ToUnicode mapping under this lualatex+lmodern
+% setup and extracts via pdftotext as a bare "�" replacement character in
+% front of every single bullet -- a real ATS text-layer defect, caught during
+% the mandatory pdftotext check on this template (2026-08-03). \textendash is
+% already proven safe here (used in the section-heading dash rule below) and
+% extracts cleanly as a literal "-".
+\setlist[itemize]{leftmargin=1.15em, itemsep=0pt, topsep=0pt, parsep=0pt, partopsep=0pt, label=\textendash}
+
+% Section headings: centered bold caps label flanked by a continuous rule on
+% both sides, rather than a left-aligned label over a full-width rule. Built
+% by hand instead of via titlesec. Two bugs found and fixed here 2026-08-03,
+% surfaced by testing this design against a fully content-filled resume
+% (cv/main_example_new_format_test.tex), not visible against the sparse
+% placeholder text in this template alone:
+% (1) v1 used a repeating dash-box pattern (\leaders\hbox to Npt{...}\hfil).
+%     A fixed-width repeat can't guarantee it divides evenly into the
+%     available stretch, so it often left a partial/clipped box at one
+%     boundary -- fixed by using a single unbroken \hrule instead (no seams
+%     to clip).
+% (2) v1 built the heading as ordinary paragraph text (\noindent...\par).
+%     That line is both the first AND last line of its own one-line
+%     paragraph, so LaTeX's automatic \parfillskip (invisible "0pt plus
+%     1fil" glue always appended at a paragraph's end) became a *third*
+%     fil-order stretch competing with the two rule regions for the same
+%     budget -- it skewed the split unevenly (one side visibly shorter than
+%     the other) instead of 50/50, even though both rule regions had
+%     identical stretch specs. Wrapping the whole line in
+%     \makebox[\linewidth]{...} sidesteps paragraph-breaking (and
+%     \parfillskip) entirely -- inside an explicit \hbox to <dim>, only the
+%     glue actually present in that box competes for stretch, so the two
+%     \hrulefill regions split evenly every time.
+% CAUTION: \hrulefill has no shrinkability. A heading long enough to
+% approach \linewidth on its own leaves the rule regions no room to work
+% with and can overflow the margin (overfull hbox) instead of gracefully
+% compressing -- keep section titles short, single-line phrases.
+\newcommand{\rsection}[1]{%
+  \par\vspace{9pt}%
+  \noindent\makebox[\linewidth]{{\color{cvblue}\hrulefill}\enspace{\bfseries\color{cvblue}\MakeUppercase{#1}}\enspace{\color{cvblue}\hrulefill}}\par
+  \vspace{4pt}%
+}
+
+% \resumeentry{Title/Role}{Date range}{Organization}{Location}
+% Line 1: bold title, right-aligned bold date on the same line.
+% Line 2: italic "Organization -- Location" (Location may be empty).
+% \strut normalizes the line's height/depth regardless of which glyphs it
+% contains, and \par (not a forced \\) ends the paragraph cleanly before the
+% following itemize begins.
+\newcommand{\resumeentry}[4]{%
+  \noindent\textbf{#1}\hfill\textbf{#2}\\
+  \ifstrempty{#4}{\textit{#3}}{\textit{#3 -- #4}}\strut\par
+}
+
+% personal data
+% NOTE: never use an underscore in a bracketed placeholder token (e.g.
+% [YOUR_NAME]) -- LaTeX treats a bare _ outside math mode as a subscript
+% operator and throws "Missing $ inserted." Use a space instead: [YOUR NAME].
+% A real, held credential can be appended directly, e.g. "[YOUR NAME], Ph.D."
+% -- never append a credential the candidate doesn't actually hold.
+\newcommand{\cvname}{[YOUR NAME]}
+% Optional one-line headline under the name, e.g. your LinkedIn headline or
+% target-title framing -- must be a real, verifiable line from the
+% candidate's own profile, never an invented tagline. Delete the \cvheadline
+% line in the HEADER block below if you don't want this row at all.
+% Separator is a plain pipe (matching the contact line below), not a bullet
+% dot -- $\bullet$ extracts as a bare "�" via pdftotext under this lualatex
+% setup, the same replacement-character defect as the itemize bullet marker
+% above (see that note for detail).
+\newcommand{\cvheadline}{[TARGET TITLE] \textbar\ [KEY SPECIALTY / INDUSTRY]}
+\newcommand{\cvphone}{[YOUR PHONE]}
+\newcommand{\cvemail}{[YOUR EMAIL]}
+\newcommand{\cvlinkedin}{[YOUR LINKEDIN URL]}
+\newcommand{\cvaddress}{[YOUR ADDRESS]}
+
+\begin{document}
+
+% ============================================================
+%     TOP ACCENT BAR CLEARANCE
+% ============================================================
+% The bar itself is drawn by the \AddToShipoutPictureBG hook in the preamble
+% (a page-background overlay, independent of normal text flow) -- it does
+% NOT push the rest of the content down automatically, so this \vspace does
+% that job manually: clears the bar's 5pt height plus a bit of breathing
+% room before the name.
+% MUST be \vspace* (starred), not plain \vspace: ordinary \vspace glue
+% placed at the very top of a page is silently discarded by TeX's
+% page-breaking algorithm (a standard, easy-to-miss LaTeX quirk -- it's the
+% same reason \topskip exists as its own mechanism rather than everyone just
+% using \vspace). With plain \vspace here, the name would render directly
+% under the bar, overlapping it -- caught only by comparing the compiled PDF
+% against the reference image, not from the source looking wrong. \vspace*
+% is specifically exempted from that discard rule.
+\vspace*{20pt}
+
+% ============================================================
+%     HEADER
+% ============================================================
+% Name at \huge (up from \Large, 2026-08-03 per user request for a bigger
+% name) -- the extra top clearance above (20pt, up from 15pt) accounts for
+% \huge's taller cap-height so the name doesn't crowd the bar above it.
+\begin{center}
+{\huge\bfseries\color{cvblue}\cvname}\\[3pt]
+{\small\cvheadline}\\[3pt]
+{\small
+% Plain-text contact line, no fontawesome icons -- fontawesome glyphs embed
+% ToUnicode entries that make pdftotext/ATS extraction emit the glyph's
+% internal name ("Envelope", "Map-mark") inline with the real contact text,
+% which some ATS platforms surface directly to recruiters as parsed preview
+% text. Confirmed via pdftotext -layout on a compiled resume.
+\cvphone
+\quad\textbar\quad
+\href{mailto:\cvemail}{\cvemail}
+\quad\textbar\quad
+\href{\cvlinkedin}{LinkedIn}
+\quad\textbar\quad
+\cvaddress
+}
+\end{center}
+\vspace{-8pt}
+
+% ============================================================
+%     PROFILE STATEMENT
+% ============================================================
+\needspace{4\baselineskip}
+\rsection{Profile Statement}
+\small{[1-3 sentences: who you are, your target job title verbatim from the posting, and your top qualifications for this specific role.]}
+
+% ============================================================
+%     CORE COMPETENCIES
+% ============================================================
+\needspace{5\baselineskip}
+\rsection{Core Competencies}
+\begin{itemize}
+\item \textbf{[Competency Category 1]}: [comma-separated skills/tools]
+\item \textbf{[Competency Category 2]}: [comma-separated skills/tools]
+\item \textbf{[Competency Category 3]}: [comma-separated skills/tools]
+\end{itemize}
+
+% ============================================================
+%     WORK EXPERIENCE
+% ============================================================
+\needspace{7\baselineskip}
+\rsection{Work Experience}
+
+\needspace{6\baselineskip}
+\resumeentry{[Job Title]}{[Month YYYY -- Month YYYY]}{[Organization]}{[City, State]}
+\begin{itemize}
+\item \textbf{[2-4 word result label]:} Bullet emphasizing an achievement relevant to the target role, with a measurable result where possible -- the bold lead-in is optional but scans well; use only when it's a genuine, non-redundant label for the sentence that follows
+\item Bullet
+\item Bullet
+\end{itemize}
+\vspace{2pt}
+
+\needspace{6\baselineskip}
+\resumeentry{[Job Title]}{[Month YYYY -- Month YYYY]}{[Organization]}{[City, State]}
+\begin{itemize}
+\item Bullet
+\item Bullet
+\end{itemize}
+
+% ============================================================
+%     EDUCATION
+% ============================================================
+\needspace{5\baselineskip}
+\rsection{Education}
+
+\needspace{3\baselineskip}
+\resumeentry{[Degree]}{[Month YYYY -- Month YYYY]}{[Institution]}{[City, State]}
+
+\needspace{3\baselineskip}
+\resumeentry{[Degree]}{[Month YYYY -- Month YYYY]}{[Institution]}{[City, State]}
+
+% ============================================================
+%     ADDITIONAL SECTIONS (optional -- add only if the 1-page budget allows:
+%     Languages, Publications, Honors and Awards. Do NOT add a References
+%     section -- omit it entirely at this length; the standalone reference
+%     sheet (08-reference-sheet-templates.md) covers this for every
+%     application regardless of what the resume itself says.)
+% ============================================================
+
+\end{document}

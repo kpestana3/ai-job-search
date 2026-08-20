@@ -1,0 +1,20 @@
+{
+  "name": "workday-cli",
+  "version": "1.0.0",
+  "description": "CLI for the Workday CXS job-search API -- one implementation covers every company registered in companies.json. No authentication required.",
+  "type": "module",
+  "main": "src/cli.ts",
+  "bin": {
+    "workday-search": "src/cli.ts"
+  },
+  "scripts": {
+    "start": "bun run src/cli.ts",
+    "test": "bun test --timeout 30000",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "@types/bun": "latest"
+  }
+}

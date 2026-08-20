@@ -80,6 +80,7 @@ The cover letter is **not a CV repetition**. It should be forward-looking:
 - Start with action verb or bold category label
 - Be specific: numbers, tools, outcomes
 - Vary the structure (not every bullet starts the same way)
+- **Check verb repetition across the whole document, not just within one role.** An automated resume critique (2026-07-30) caught "Performed" opening two bullets in different job entries on the CV, plus "Applied" and "Helped" elsewhere - each individually fine, but repetitive when read start to finish. Scan the full bullet list across all roles before finalizing, not just each `\resumeentry` block in isolation. Never inflate a verb into overclaiming credit to avoid repetition (e.g. don't turn "helped establish" into "led" or "spearheaded" if the work was genuinely collaborative) - pick an honest synonym instead ("co-established", "contributed to establishing").
 
 ## Language for Different Role Types
 
@@ -104,3 +105,10 @@ The cover letter is **not a CV repetition**. It should be forward-looking:
 - Default to the language of the job posting
 - Cover letters in the posting's language should feel natural, not translated
 - Slightly warmer, more personal tone may be acceptable in some languages
+
+## Patterns Observed in Past Applications
+
+*[Inferred from cross-referencing submitted cover letters via /setup Path A — confirmed patterns, safe to reuse]*
+
+- **Honest-gap paragraph placement:** Confirmed across 5+ cover letters — the paragraph disclosing genuine technical gaps consistently sits after the bullet list and before the closing, naming the specific missing tool by name rather than hedging vaguely ("I have not yet worked with X" beats "my experience in this area is more limited").
+- **Gap-plus-bridge pairing:** Confirmed 3+ times — a disclosed gap reads stronger when paired with a concrete, specific reason it would close quickly (e.g., "[new tool] shares the same underlying logic as [tool I've already used]"), rather than left as a bare admission.

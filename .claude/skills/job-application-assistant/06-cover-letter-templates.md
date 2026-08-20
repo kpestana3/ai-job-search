@@ -178,10 +178,11 @@ The opening paragraph must state the **exact job title as written in the posting
 
 ### Scientific Notation (Life Sciences / Biomedical Roles)
 Apply automatically whenever the cover letter references organisms or genes:
-- **Genus/species:** italicize with `\textit{}`, e.g. `\textit{Plasmodium vivax}`.
-- **Abbreviation after first mention:** the first full mention in the document is spelled out in full; every subsequent mention abbreviates the genus to its initial and keeps italicizing, e.g. `\textit{Plasmodium vivax}` -> `\textit{P. vivax}`. Track this per document (a genus mentioned in the CV and again in the cover letter is a fresh "first mention" in each file).
-- **Gene names:** italicize, e.g. `\textit{DBP1}`, `\textit{EBP/DBP2}`.
+- **Genus/species:** italicize with `\textit{}`, e.g. `\textit{Escherichia coli}`.
+- **Abbreviation after first mention:** the first full mention in the document is spelled out in full; every subsequent mention abbreviates the genus to its initial and keeps italicizing, e.g. `\textit{Escherichia coli}` -> `\textit{E. coli}`. Track this per document (a genus mentioned in the CV and again in the cover letter is a fresh "first mention" in each file).
+- **Gene names:** italicize, e.g. `\textit{lacZ}`, `\textit{recA}`.
 - **Protein names:** do NOT italicize — standard convention distinguishes the italic gene from the roman-text protein it encodes.
+- **Latin phrases:** italicize standard italicized Latin scientific terms, e.g. `\textit{in vivo}`, `\textit{ex vivo}`, `\textit{in vitro}`, `\textit{in situ}`.
 
 ### Non-English Cover Letters
 - Same template structure, just write content in the posting's language

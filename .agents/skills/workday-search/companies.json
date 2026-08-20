@@ -1,0 +1,23 @@
+{
+  "_comment": "Registry of confirmed Workday CXS tenants. Each entry verified live during scaffolding (2026-07-19) via a real search request that returned real postings. Add new companies here as they're confirmed - see README.md 'Adding a company' for the verification steps. Do NOT add an entry you haven't verified live; a wrong tenant/site silently returns HTTP_422 or an empty result set, not a helpful error.",
+  "companies": {
+    "illumina": { "displayName": "Illumina", "tenant": "illumina", "wd": "wd1", "site": "illumina-careers" },
+    "jefferson": { "displayName": "Jefferson Health / Thomas Jefferson University", "tenant": "jeffersonhealth", "wd": "wd5", "site": "ThomasJeffersonExternal" },
+    "merck": { "displayName": "Merck (MSD)", "tenant": "msd", "wd": "wd5", "site": "SearchJobs" },
+    "gsk": { "displayName": "GSK", "tenant": "gsk", "wd": "wd5", "site": "GSKCareers" },
+    "sanofi": { "displayName": "Sanofi", "tenant": "sanofi", "wd": "wd3", "site": "SanofiCareers" },
+    "gilead": { "displayName": "Gilead Sciences", "tenant": "gilead", "wd": "wd1", "site": "gileadcareers" },
+    "labcorp": { "displayName": "LabCorp", "tenant": "labcorp", "wd": "wd1", "site": "External" },
+    "roche": { "displayName": "Roche / Genentech", "tenant": "roche", "wd": "wd3", "site": "ROG-A2O-GENE" },
+    "abbott": { "displayName": "Abbott", "tenant": "abbott", "wd": "wd5", "site": "abbottcareers" },
+    "chop": { "displayName": "Children's Hospital of Philadelphia", "tenant": "chop", "wd": "wd108", "site": "CHOPExternalCareers" },
+    "qiagen": { "displayName": "QIAGEN", "tenant": "qiagen", "wd": "wd502", "site": "QIAGEN" },
+    "novavax": { "displayName": "Novavax", "tenant": "novavax", "wd": "wd1", "site": "Careers", "note": "Live and correctly configured, but returns 0 open jobs as of 2026-08-07 - the original scaffolding guess was actually right; the empty result set during scaffolding was a genuine 0-jobs state, not a wrong tenant/site." }
+  },
+  "_confirmed_not_on_workday": {
+    "_comment": "Checked during scaffolding; these use their own custom career sites, not myworkdayjobs.com.",
+    "thermofisher": "jobs.thermofisher.com",
+    "abbvie": "careers.abbvie.com",
+    "10xgenomics": "careers.10xgenomics.com"
+  }
+}

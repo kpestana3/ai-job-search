@@ -33,6 +33,8 @@ check_paths="CLAUDE.md
 .claude/skills/job-application-assistant/04-job-evaluation.md
 .claude/skills/job-application-assistant/07-interview-prep.md
 cv/main_example.tex
+cv/academic_cv_template.tex
+tools/build_dashboard.py
 .claude/skills/job-scraper/search-queries.md"
 
 marker_for() {
@@ -43,6 +45,8 @@ marker_for() {
     ".claude/skills/job-application-assistant/04-job-evaluation.md") echo '[YOUR_PRIMARY_SKILLS]' ;;
     ".claude/skills/job-application-assistant/07-interview-prep.md") echo '[PROJECT_NAME]' ;;
     "cv/main_example.tex") echo '[YOUR_NAME]' ;;
+    "cv/academic_cv_template.tex") echo '[YOUR_NAME]' ;;
+    "tools/build_dashboard.py") echo '_owner_name()' ;;
     ".claude/skills/job-scraper/search-queries.md") echo '[YOUR_JOB_BOARD]' ;;
   esac
 }

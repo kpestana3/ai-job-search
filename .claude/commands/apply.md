@@ -65,22 +65,22 @@ Read only the reference files you do not yet have:
 - `.claude/skills/job-application-assistant/08-reference-sheet-templates.md`
 
 Also read the most recent existing CV and cover letter files for concrete structural reference (one of each is enough):
-- Read any existing `applications/*/[YOUR_NAME]_CV_*.tex` file as a LaTeX template reference (industry resume) — fall back to `cv/main_example.tex` if this is the first application
+- Read any existing `applications/*/[YOUR_NAME]_Resume_*.tex` file as a LaTeX template reference (industry resume) — fall back to `cv/main_example.tex` if this is the first application
 - If the posting was classified as academic (or both) in Step 0, also read any existing `applications/*/[YOUR_NAME]_AcademicCV_*.tex` file, or `cv/academic_cv_template.tex` if none exists yet, as the academic CV reference
 - Read any existing `applications/*/[YOUR_NAME]_CoverLetter_*.tex` file as a template reference — fall back to `cover_letters/cover_example.tex` if this is the first application
 - Read any existing `applications/*/[YOUR_NAME]_References_*.tex` file as a template reference — fall back to `cover_letters/reference_sheet_example.tex` if this is the first application
 
-**Output location:** every document for this application goes into the folder created in Step 0, `applications/<Company>_<RoleSlugOrJobID>/`, using the naming convention `[YOUR_NAME]_<DocType>_<Company>_<id or slug>.tex` (e.g. `[YOUR_NAME]_CV_Temple_R-01306979.tex`, or `[YOUR_NAME]_CV_Temple_BoniLab.tex` when there's no job ID). Never write per-application documents into the flat `cv/` or `cover_letters/` directories — those hold only the master reference templates (`main_example.tex`, `academic_cv_template.tex`, `cover_example.tex`) and the shared `cover.cls`/`OpenFonts/` resources.
+**Output location:** every document for this application goes into the folder created in Step 0, `applications/<Company>_<RoleSlugOrJobID>/`, using the naming convention `[YOUR_NAME]_<DocType>_<Company>_<id or slug>.tex` (e.g. `[YOUR_NAME]_Resume_Temple_R-01306979.tex`, or `[YOUR_NAME]_Resume_Temple_BoniLab.tex` when there's no job ID). The industry resume's DocType token is `Resume` — deliberately distinct from `AcademicCV`, so the two document types are unambiguous at a glance in a folder listing. Never write per-application documents into the flat `cv/` or `cover_letters/` directories — those hold only the master reference templates (`main_example.tex`, `academic_cv_template.tex`, `cover_example.tex`) and the shared `cover.cls`/`OpenFonts/` resources.
 
 Draft the document(s) determined by Step 0's classification:
 
-### Industry resume (`applications/<Company>_<RoleSlugOrJobID>/[YOUR_NAME]_CV_<Company>_<id or slug>.tex`)
+### Industry resume (`applications/<Company>_<RoleSlugOrJobID>/[YOUR_NAME]_Resume_<Company>_<id or slug>.tex`)
 Generate when the posting was classified industry (or both).
 - Always in **English**
-- Follow the moderncv/banking format from `05-cv-templates.md`
+- Follow the active template (`ats-resume`) per `05-cv-templates.md`'s ACTIVE-TEMPLATE override — base off `cv/main_example.tex` or the most recent `applications/*/[YOUR_NAME]_Resume_*.tex`, if more current
 - Tailor the profile statement and experience bullets to the specific role
 - Reframe skills and achievements to match job requirements
-- Keep to 2 pages
+- Keep to **1 page** (see `05-cv-templates.md`'s "Page Budget - Hard 1-Page Limit" for the per-section content budget this requires — noticeably tighter than the old 2-page moderncv budget)
 - Apply the Scientific Notation rules in `05-cv-templates.md` (italicize genus/species, abbreviate after first mention, italicize gene names, roman-text protein names)
 
 ### Academic CV (`applications/<Company>_<RoleSlugOrJobID>/[YOUR_NAME]_AcademicCV_<Company>_<id or slug>.tex`)
@@ -146,7 +146,7 @@ Do NOT read `05-cv-templates.md` or `06-cover-letter-templates.md` — those gov
 ### 3. Drafts to Review
 Both drafts are provided inline below. Do NOT use the Read tool on the draft files — use these exact texts.
 
-<CV_DRAFT file="applications/<COMPANY>_<ROLE_SLUG_OR_ID>/[YOUR_NAME]_CV_<COMPANY>_<ID_OR_SLUG>.tex">
+<CV_DRAFT file="applications/<COMPANY>_<ROLE_SLUG_OR_ID>/[YOUR_NAME]_Resume_<COMPANY>_<ID_OR_SLUG>.tex">
 <INSERT_CV_DRAFT_HERE>
 </CV_DRAFT>
 
@@ -167,7 +167,7 @@ Return your feedback in **two parts**:
 A JSON array of concrete edits the drafter can apply directly without re-reading the files. Each edit is an object:
 ```json
 {
-  "file": "applications/<COMPANY>_<ROLE_SLUG_OR_ID>/[YOUR_NAME]_CV_<COMPANY>_<ID_OR_SLUG>.tex" | "applications/<COMPANY>_<ROLE_SLUG_OR_ID>/[YOUR_NAME]_CoverLetter_<COMPANY>_<ID_OR_SLUG>.tex",
+  "file": "applications/<COMPANY>_<ROLE_SLUG_OR_ID>/[YOUR_NAME]_Resume_<COMPANY>_<ID_OR_SLUG>.tex" | "applications/<COMPANY>_<ROLE_SLUG_OR_ID>/[YOUR_NAME]_CoverLetter_<COMPANY>_<ID_OR_SLUG>.tex",
   "old_string": "<exact text currently in the draft>",
   "new_string": "<replacement text>",
   "reason": "<one-line rationale: keyword match / company angle / reframing / style>"
@@ -219,7 +219,7 @@ All documents live in `applications/<Company>_<RoleSlugOrJobID>/`. CVs have no e
 
 ```bash
 cd applications/<Company>_<RoleSlugOrJobID>
-lualatex -interaction=nonstopmode [YOUR_NAME]_CV_<Company>_<id or slug>.tex
+lualatex -interaction=nonstopmode [YOUR_NAME]_Resume_<Company>_<id or slug>.tex
 ```
 
 If an academic CV was drafted, compile it too:
@@ -260,10 +260,9 @@ If any compile fails, fix the error and re-compile until clean.
 
 Read all generated PDFs via the Read tool and verify:
 
-**Industry resume (`[YOUR_NAME]_CV_<Company>_<id or slug>.pdf`):**
-- [ ] Exactly 2 pages (not 1, not 3)
-- [ ] No orphaned `\cventry` titles — a job/education title line must never sit alone at the bottom of page 1 with its bullets on page 2. This is the most common failure.
-- [ ] Section headings are not isolated at the top of page 2 with only 1-2 lines below
+**Industry resume (`[YOUR_NAME]_Resume_<Company>_<id or slug>.pdf`):**
+- [ ] Exactly 1 page (not 2)
+- [ ] No orphaned `\resumeentry` titles — a job/education title line must never sit alone at the bottom of the page with its bullets spilling onto a second page. This is the most common failure.
 - [ ] No awkward whitespace gaps
 
 **Academic CV (`[YOUR_NAME]_AcademicCV_<Company>_<id or slug>.pdf`), if generated:**
@@ -287,9 +286,9 @@ Read all generated PDFs via the Read tool and verify:
 
 If the layout has problems, edit the `.tex` files and recompile. Common fixes (see `05-cv-templates.md` and `06-cover-letter-templates.md` for full details):
 
-- **Orphaned CV entry title:** `\usepackage{needspace}` in preamble, then `\needspace{5\baselineskip}` immediately before the problematic `\cventry`
-- **CV spills to page 3 with only a trailing section:** `\enlargethispage{2-3\baselineskip}` before a late section
-- **Substantial content on page 3:** cut content using **relevance-weighted cutting** (see `05-cv-templates.md` → "Relevance-weighted cutting"). Score each candidate line by (a) relevance to THIS posting's keywords and responsibilities, (b) uniqueness (is it duplicated elsewhere?), (c) narrative load (does the cover letter depend on it?). Cut the lowest-total-score line first, regardless of section. Do NOT mechanically apply a static section-based priority order — an older-role bullet that hits posting keywords is worth more than a recent-role bullet that does not.
+- **Orphaned resume entry title:** `\usepackage{needspace}` in preamble, then `\needspace{5\baselineskip}` immediately before the problematic `\resumeentry` (or `\cventry` for the academic CV, which stays on moderncv)
+- **Resume spills to page 2 by just a few lines:** `\enlargethispage{2-3\baselineskip}` before a late section
+- **Substantial content on page 2:** cut content using **relevance-weighted cutting** (see `05-cv-templates.md` → "Relevance-weighted cutting"). Score each candidate line by (a) relevance to THIS posting's keywords and responsibilities, (b) uniqueness (is it duplicated elsewhere?), (c) narrative load (does the cover letter depend on it?). Cut the lowest-total-score line first, regardless of section. Do NOT mechanically apply a static section-based priority order — an older-role bullet that hits posting keywords is worth more than a recent-role bullet that does not.
 - **Cover letter itemize breaks compile or uses wrong font:** close `\lettercontent{}` before the list, wrap the list in `{\raggedright\fontspec[Path = OpenFonts/fonts/raleway/]{Raleway-Medium}\fontsize{11pt}{13pt}\selectfont \begin{itemize}...\end{itemize}\par}`
 - **Cover letter spills to 2 pages:** trim using the same relevance-weighted logic. First cut: sentences that restate what a bullet already said. Second cut: a bullet that does not hit posting keywords. Last resort: a bullet that does hit posting keywords. Never reduce geometry or line spacing.
 
@@ -297,14 +296,14 @@ Do not proceed to Step 6 until both PDFs pass inspection.
 
 ### 5d. ATS & keyword verification (CV)
 
-An ATS parser reads the PDF's embedded **text layer**, not the rendered page — a CV that passed visual inspection can still extract as garbage (icon glyphs where the contact details should be, scrambled reading order in multi-column layouts). This step verifies what a parser actually sees. It applies to the **industry resume only** (`[YOUR_NAME]_CV_<Company>_<id or slug>.tex`); cover letters rarely go through keyword screening, and academic hiring committees read the CV directly rather than screening it through an ATS, so the academic CV does not need this check.
+An ATS parser reads the PDF's embedded **text layer**, not the rendered page — a CV that passed visual inspection can still extract as garbage (icon glyphs where the contact details should be, scrambled reading order in multi-column layouts). This step verifies what a parser actually sees. It applies to the **industry resume only** (`[YOUR_NAME]_Resume_<Company>_<id or slug>.tex`); cover letters rarely go through keyword screening, and academic hiring committees read the CV directly rather than screening it through an ATS, so the academic CV does not need this check.
 
 **Availability check:** run `pdftotext -v`. `pdftotext` (poppler) is an optional dependency, not part of TeX distributions. If it is missing, print a one-line warning that the mechanical parse check is skipped, do the keyword-coverage check (item 3 below) against your visual Read of the PDF instead, and note the degraded mode in the Step 6 report. Same graceful-skip pattern as the salary lookup.
 
 **1. Extract the text layer:**
 
 ```bash
-cd applications/<Company>_<RoleSlugOrJobID> && pdftotext -layout [YOUR_NAME]_CV_<Company>_<id or slug>.pdf [YOUR_NAME]_CV_<Company>_<id or slug>.txt
+cd applications/<Company>_<RoleSlugOrJobID> && pdftotext -layout [YOUR_NAME]_Resume_<Company>_<id or slug>.pdf [YOUR_NAME]_Resume_<Company>_<id or slug>.txt
 ```
 
 Read the `.txt` file.
@@ -313,7 +312,7 @@ Read the `.txt` file.
 
 - [ ] **Text extracted at all**, with no garbage runs: no `(cid:NNN)` markers, no `�` replacement characters, no stretches of missing text that are visible in the PDF
 - [ ] **Email and phone survive as literal text.** Icon fonts extract as glyph names (the stock template's contact line extracts as `MOBILE-ALT [+XX ...] • Envelope [your.email@...]`) — that noise is harmless, but the actual address and digits must be present. A contact detail carried only by an icon or a hyperlink target (like the `LinkedIn` link text) is invisible to an ATS; the email must be printed as text.
-- [ ] **Reading order matches the visual order** — section headings appear in the same sequence as on the page, and lines from different sections are not interleaved. The stock banking template is single-column and safe; custom templates registered via `/add-template` with sidebars or multi-column layouts are where this breaks.
+- [ ] **Reading order matches the visual order** — section headings appear in the same sequence as on the page, and lines from different sections are not interleaved. Both the active `ats-resume` template and the stock banking template are single-column and safe; custom templates registered via `/add-template` with sidebars or multi-column layouts are where this breaks.
 - [ ] **Dates recognizable** — each role and degree has its years present in the extraction.
 
 Failures here are template-level problems: fix them in the `.tex` (e.g. print the email as text rather than icon-only), then re-run 5a–5c and re-extract. If a custom template's layout fundamentally scrambles extraction order, tell the user prominently — they may be trading ATS compatibility for looks.
@@ -357,7 +356,7 @@ Report which 4-5 references were selected and why (which posting themes matched 
 ### Files Created
 List the files written, all under `applications/<Company>_<RoleSlugOrJobID>/`:
 - `job_posting.md` (saved copy of the posting text, from Step 0)
-- `[YOUR_NAME]_CV_<Company>_<id or slug>.tex` + `.pdf` (if industry resume was generated)
+- `[YOUR_NAME]_Resume_<Company>_<id or slug>.tex` + `.pdf` (if industry resume was generated)
 - `[YOUR_NAME]_AcademicCV_<Company>_<id or slug>.tex` + `.pdf` (if academic CV was generated)
 - `[YOUR_NAME]_CoverLetter_<Company>_<id or slug>.tex` + `.pdf`
 - `[YOUR_NAME]_References_<Company>_<id or slug>.tex` + `.pdf`

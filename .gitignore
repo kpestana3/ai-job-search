@@ -31,6 +31,11 @@ linkedin_Profile.pdf
 *.png
 !cover_letters/OpenFonts/fonts/**
 
+# Secrets / API keys (e.g. USAJOBS_API_KEY for usajobs-search) — never commit
+.env
+.env.*
+!.env.example
+
 # OS files
 .DS_Store
 Thumbs.db
@@ -61,16 +66,24 @@ cover_letters/reference_sheet_*.tex
 # postings, email drafts — all personal/real application content)
 applications/
 
+# Third-party personal data (e.g. documents reworked as a favor for a
+# networking contact) — never someone else's PII in version control
+other_people/
+
 # documents/ subfolder contents are personal — only README and folder structure are tracked
 documents/cv/**
 documents/linkedin/**
 documents/diplomas/**
 documents/references/**
 documents/applications/**
+documents/counselor_updates/**
 !documents/**/.gitkeep
 
 # Personal job search tracking
 job_search_tracker.csv
+networking_tracker.csv
+next_steps.csv
+dashboard.html
 
 # Upskill reports (personal output)
 upskill/*.md

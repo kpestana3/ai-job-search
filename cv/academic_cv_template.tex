@@ -1,4 +1,4 @@
-%% Academic CV Template - [YOUR_NAME]
+%% Academic CV - [YOUR_NAME]
 %% Full, untrimmed academic CV: complete publication list, all conference
 %% presentations, teaching/mentoring experience, and grants. Unlike
 %% cv/main_example.tex (the 2-page industry resume), this document has NO
@@ -11,7 +11,7 @@
 %% Professional Statement, Research Skills, Work Experience,
 %% International Training, Awards and Funding, Teaching and Mentoring,
 %% Education, Publications and Posters, then Service and Leadership,
-%% Professional Memberships, Certifications, References.
+%% Professional Memberships, References.
 %%
 %% Every \section is preceded by \needspace{...} sized for the heading plus
 %% at least its first entry, so a heading can never be orphaned at the
@@ -20,9 +20,25 @@
 %% Compile with: lualatex academic_cv_template.tex
 %% (pdflatex often fails on modern MiKTeX with fontawesome5 font-expansion errors.)
 
-\documentclass[11pt,a4paper,sans]{moderncv}
+\documentclass[11pt,letterpaper,sans]{moderncv}
 \moderncvstyle{banking}
 \moderncvcolor{blue}
+% Force the marvosym icon set instead of banking's lualatex/xelatex default
+% (fontawesome5, via moderncviconsawesome.sty). fontawesome5 icons here
+% render as literal fallback text ("MOBILE-ANDROID-ALT") in the compiled
+% PDF under this MiKTeX+lualatex setup -- the same glyph-name-leak root
+% cause already fixed in the ats-resume template's header, but worse here
+% since it shows in the rendered page itself, not just pdftotext output.
+\moderncvicons{marvosym}
+% moderncv's default header separator between phone/email/extrainfo is
+% \textbullet forced into \rmfamily (see moderncvheadiii.sty's
+% \makeheaddetailssymbol) -- under this MiKTeX+lualatex setup that glyph
+% extracts as a bare U+FFFD replacement character via pdftotext, even
+% though the icon fix above already resolved the visible FontAwesome
+% fallback-text bug. Override to a plain pipe, which extracts cleanly and
+% matches the separator style already used in the ats-resume template's
+% contact line.
+\renewcommand*{\makeheaddetailssymbol}{\hspace{1em}{\rmfamily |}\hspace{1em}}
 
 % Force both first and last name AND section headings to render in moderncv
 % blue (color1). Default banking on lualatex+MiKTeX leaves these black, which
@@ -42,7 +58,12 @@
     pdftitle={[YOUR_NAME] - Academic CV},
     pdfpagemode=FullScreen,
 }
-\usepackage[scale=0.80]{geometry}
+% Explicit, symmetric margins instead of geometry's scale=0.80 -- scale
+% mode can leave the bottom margin visibly larger than the top, likely
+% because moderncv's own headheight/headsep eats into geometry's top-margin
+% share differently than footskip eats into the bottom. Explicit top=bottom
+% values remove that ambiguity.
+\usepackage[top=1in, bottom=1in, left=0.75in, right=0.75in]{geometry}
 \usepackage{import}
 
 % personal data
@@ -59,13 +80,9 @@
 % ============================================================
 %     PROFESSIONAL STATEMENT
 % ============================================================
-% SETUP: When tailoring for a specific posting, insert the exact target job
-% title from the posting here (e.g. "pursuing a **Postdoctoral Research
-% Associate** position"), framed as the target role, not fabricated into
-% work history. See 05-cv-templates.md "Target Job Title in Statement".
 
 \vspace{6pt}
-\small{[Write a 3-5 line professional statement tailored to the specific research position. Focus on your research specialization, key methods, and the trajectory of your work. Example: "Research scientist with a Ph.D. in [field], specializing in [research area]. Combines [primary method/technique] with [secondary method/technique] to study [research question]. N years of [field-to-bench / international / interdisciplinary] research in collaboration with academic, government, and global research institutions."]}
+\small{[Write a 3-5 line professional statement summarizing your research focus, technical approach, and career trajectory. Example: "Biomedical scientist with a Ph.D. in [field], specializing in [domain]. Combines [technical skill 1] with [technical skill 2] to study [research question]. X years of [collaboration type] research in collaboration with [types of institutions], with a parallel record of teaching and mentoring."]}
 
 % ============================================================
 %     RESEARCH SKILLS
@@ -76,15 +93,15 @@
 \vspace{1pt}
 \begin{itemize}
 
-\item \textbf{[Skill Category 1]}: [Specific techniques, assays, or methods. Be concrete.]
+\item \textbf{[Skill Category 1]}: [Specific methods, tools, techniques. Be concrete.]
 
-\item \textbf{[Skill Category 2]}: [Specific techniques, tools, or platforms.]
+\item \textbf{[Skill Category 2]}: [Specific methods, tools, techniques.]
 
-\item \textbf{[Skill Category 3]}: [Analytical/computational skills, software, languages.]
+\item \textbf{[Skill Category 3]}: [Specific methods, tools, techniques.]
 
-\item \textbf{[Skill Category 4]}: [Operational skills: SOP development, lab setup, collaboration, project coordination.]
+\item \textbf{[Skill Category 4]}: [Bioinformatics/data analysis tools and approaches, if applicable.]
 
-\item \textbf{[Skill Category 5]}: [Languages, certifications, or other relevant skills.]
+\item \textbf{[Skill Category 5]}: [Research operations: SOP development, lab setup, project coordination, etc.]
 
 \end{itemize}
 
@@ -97,23 +114,23 @@
 \vspace{3pt}
 \begin{itemize}
 
-\needspace{6\baselineskip}
-\item{\cventry{[YYYY--Present]}{[Job Title]}{[Institution]}{[City, Country]}{}{\vspace{1pt}
+\needspace{7\baselineskip}
+\item{\cventry{[YYYY--YYYY]}{[Job Title]}{[Institution]}{[City, State/Country]}{}{\vspace{1pt}
 Advisor: [Advisor Name]
 \begin{itemize}
-    \item [Achievement or responsibility 1 - be specific, use numbers where possible]
-    \item [Achievement or responsibility 2]
-    \item [Achievement or responsibility 3]
+    \item [Achievement/responsibility with concrete detail - methods, scale, outcome]
+    \item [Achievement/responsibility with concrete detail]
+    \item [Achievement/responsibility, cite a publication if it resulted in one]
 \end{itemize}}}
 
 \vspace{3pt}
 
-\needspace{6\baselineskip}
-\item{\cventry{[YYYY--YYYY]}{[Job Title]}{[Institution]}{[City, Country]}{}{\vspace{1pt}
+\needspace{7\baselineskip}
+\item{\cventry{[YYYY--YYYY]}{[Job Title]}{[Institution]}{[City, State/Country]}{}{\vspace{1pt}
 Advisor: [Advisor Name]
 \begin{itemize}
-    \item [Achievement or responsibility 1]
-    \item [Achievement or responsibility 2]
+    \item [Achievement/responsibility with concrete detail]
+    \item [Achievement/responsibility with concrete detail]
 \end{itemize}}}
 
 \end{itemize}
@@ -126,7 +143,7 @@ Advisor: [Advisor Name]
 \section{International Training}
 \vspace{1pt}
 \begin{itemize}
-\item{\textbf{[Training/Collaboration Name], [Institution]} ([Month Year]) -- [Brief description of the training, collaboration, or field experience.]}
+\item{\textbf{[Training Type], [Institution, Country]} ([Month Year]) -- [What you did, who you trained/worked with, what it supported.]}
 \end{itemize}
 
 % ============================================================
@@ -137,7 +154,8 @@ Advisor: [Advisor Name]
 \section{Awards and Funding}
 \vspace{1pt}
 \begin{itemize}
-\item{\textbf{[Award/Grant Name]} ([Grant ID, if applicable]) -- [Brief description] ([YYYY--YYYY]).}
+\item{\textbf{[Award/Grant Name]} ([Grant Number, if applicable]) -- [Amount, role (named recipient/co-recipient), and what it funded.]}
+\item{\textbf{[Travel Award/Fellowship Name]} -- [Institution]; [what it funded.]}
 \end{itemize}
 
 % ============================================================
@@ -150,15 +168,15 @@ Advisor: [Advisor Name]
 \textbf{Teaching Experience}
 \vspace{1pt}
 \begin{itemize}
-\item{\textbf{[Course Name]} ([Terms taught]) -- [Brief description of teaching responsibilities and outcomes.]}
+\item{\textbf{[Course Name]} ([Terms Taught]) -- [What you did: instruction delivered, assessments, notable contributions.]}
 \end{itemize}
 
 \vspace{3pt}
-\needspace{4\baselineskip}
+\needspace{5\baselineskip}
 \textbf{Mentoring Experience}
 \vspace{1pt}
 \begin{itemize}
-\item{\textbf{[Mentee Name]}, [Mentee Role/Program] ([YYYY--YYYY]) -- [What you mentored them in, and any notable outcome.]}
+\item{\textbf{[Mentee Name]}, [Their Role/Program] ([Years]) -- [What you mentored them in.]}
 \end{itemize}
 
 % ============================================================
@@ -171,14 +189,14 @@ Advisor: [Advisor Name]
 \begin{itemize}
 
 \needspace{4\baselineskip}
-\item{\cventry{[YYYY--YYYY]}{[Degree] in [Field]}{[Institution]}{[City, Country]}{}{\vspace{1pt}
-[Thesis/dissertation focus.] Advisor: [Advisor Name].
+\item{\cventry{[YYYY--YYYY]}{[Degree, e.g. Ph.D. in Field]}{[Institution]}{[City, State/Country]}{}{\vspace{1pt}
+[Thesis topic, one line]. Advisor: [Advisor Name].
 }}
 
 \vspace{3pt}
 
 \needspace{4\baselineskip}
-\item{\cventry{[YYYY--YYYY]}{[Degree] in [Field]}{[Institution]}{[City, Country]}{}{}}
+\item{\cventry{[YYYY--YYYY]}{[Degree, e.g. B.A. in Field]}{[Institution]}{[City, State/Country]}{}{}}
 
 \end{itemize}
 
@@ -192,7 +210,7 @@ Advisor: [Advisor Name]
 \textbf{Publications}
 \vspace{1pt}
 \begin{itemize}
-\item [Author(s), in publication order] ([Year]). [Title]. \textit{[Journal]}. \href{[DOI_URL]}{DOI: [DOI]}
+\item \textbf{\underline{[LastName I]}}, [Coauthor A], [Coauthor B] ([Year]). [Title of paper]. \textit{[Journal Name]}. \href{[https://doi.org/xxxx]}{DOI: [xxxx]}
 \end{itemize}
 
 \vspace{3pt}
@@ -200,7 +218,7 @@ Advisor: [Advisor Name]
 \textbf{Presentations (as presenter)}
 \vspace{1pt}
 \begin{itemize}
-\item [Author(s)]. [Title]. [Conference/Series]. [Presentation type] -- [City, State/Country] ([Year])
+\item \textbf{\underline{[LastName I]}}. [Title]. [Conference Name]. Oral Presentation/Poster -- [City, State] ([Year])
 \end{itemize}
 
 \vspace{3pt}
@@ -209,7 +227,7 @@ Advisor: [Advisor Name]
 
 \small{Co-authored but not personally presented by the candidate:}
 \begin{itemize}
-\item [Author(s)]. [Title]. [Conference/Series]. [Presentation type] (presented by [Presenter]) -- [City, State/Country] ([Year])
+\item [Coauthor A], \textbf{\underline{[LastName I]}}, [Coauthor B]. [Title]. [Conference Name]. Poster (presented by [Presenter]) -- [City, State] ([Year])
 \end{itemize}
 
 % ============================================================
@@ -220,7 +238,7 @@ Advisor: [Advisor Name]
 \section{Service and Leadership}
 \vspace{1pt}
 \begin{itemize}
-\item{\textbf{[Role], [Organization]}, [Institution] ([YYYY--YYYY]) -- [Brief description of responsibilities.]}
+\item{\textbf{[Role/Position]}, [Organization], [Institution] ([Years]) -- [What you did.]}
 \end{itemize}
 
 % ============================================================
@@ -231,35 +249,22 @@ Advisor: [Advisor Name]
 \section{Professional Memberships}
 \vspace{1pt}
 \begin{itemize}
-\item{[Organization Name], [Institution] ([YYYY--YYYY])}
-\end{itemize}
-
-% ============================================================
-%     CERTIFICATIONS
-% ============================================================
-
-\needspace{4\baselineskip}
-\section{Certifications}
-\vspace{1pt}
-\begin{itemize}
-\item{\textbf{[Certification Name]} -- [Brief description, dates, active/expired status.]}
+\item{[Organization Name] ([Years])}
 \end{itemize}
 
 % ============================================================
 %     REFERENCES
 % ============================================================
-% SETUP: Academic convention lists named references with contact info
-% directly (not "available upon request"). Only include references who have
-% explicitly confirmed. Tag each with what they can specifically speak to --
-% see 08-reference-sheet-templates.md for the tag taxonomy and per-posting
-% selection logic that narrows the full pool down for each application.
+% Full, permanent reference pool (source: 01-candidate-profile.md). Per-
+% application copies of this file narrow this down to the 4-5 references
+% tag-matched to that posting (see 08-reference-sheet-templates.md) -- this
+% master file keeps everyone with contact info on file.
 
-\needspace{7\baselineskip}
+\needspace{6\baselineskip}
 \section{References}
 \vspace{1pt}
 \begin{itemize}
-\item{\textbf{[Reference Name]}, [Title], [Institution] -- \href{mailto:[email]}{[email]}, [phone] ([What this reference can specifically speak to])}
-\item{\textbf{[Reference Name]}, [Title], [Institution] -- \href{mailto:[email]}{[email]}, [phone] ([What this reference can specifically speak to])}
+\item{\textbf{[Name]}, [Title], [Institution] -- \href{mailto:[email]}{[email]}, [phone]. [What they can speak to.]}
 \end{itemize}
 
 \end{document}
